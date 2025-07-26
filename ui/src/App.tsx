@@ -39,7 +39,39 @@ const App = () => {
 
   // Load items when component mounts
   useEffect(() => {
-    fetchItems();
+    let isMounted = true;
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${API_URL}/items`);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+
+        if (isMounted) {
+          setItems(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError("Failed to fetch shopping items");
+          console.error(err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Add a new item
@@ -146,7 +178,12 @@ const App = () => {
       {error && <div className="error-message">{error}</div>}
 
       {/* Add new item form */}
-      <form onSubmit={handleAddItem} className="add-item-form">
+      <form
+        onSubmit={handleAddItem}
+        className="add-item-form"
+        aria-label="Add New Item"
+        data-testid="add-item-form"
+      >
         <h2>Add New Item</h2>
         <div className="form-row">
           <input
