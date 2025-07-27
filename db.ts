@@ -3,13 +3,15 @@ import path from 'path';
 import fs from 'fs';
 
 // Ensure the data directory exists
-const dataDir = path.join(__dirname, 'data');
+const dataDir = path.join(process.cwd(), 'dist', 'data');
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
 // Create the database connection
-const dbPath = path.join(dataDir, 'shopping-list.db');
+const dbPath = process.env.DATABASE_PATH 
+  ? process.env.DATABASE_PATH 
+  : path.join(dataDir, 'shopping-list.db');
 const db = new Database(dbPath);
 
 // Define Shopping Item interface
