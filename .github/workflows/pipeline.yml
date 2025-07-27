@@ -23,20 +23,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: npm install
-        run: npm install
+      - name: pnpm install
+        run: pnpm install
       - name: lint
-        run: npm run lint
+        run: pnpm run lint
       - name: build
-        run: npm run build
+        run: pnpm run build
 
       # - name: test
-      #   run: npm run test
+      #   run: pnpm run test
       # - name: e2e tests
       #   uses: cypress-io/github-action@v6
       #   with:
-      #     command: npm run cypress:run
-      #     start: npm run start-prod
+      #     command: pnpm run cypress:run
+      #     start: pnpm run start-prod
       #     wait-on: http://localhost:5000
       #     headed: false
 
