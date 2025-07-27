@@ -1,6 +1,6 @@
-import express, { Request, Response } from 'express';
+import express, { type Request, type Response } from 'express';
 import cors from 'cors';
-import { dbOperations, ShoppingItem } from './db';
+import { dbOperations } from './db';
 
 // Initialize express application
 const app = express();

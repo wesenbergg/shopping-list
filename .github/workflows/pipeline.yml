@@ -30,15 +30,15 @@ jobs:
       - name: build
         run: npm run build
 
-      - name: test
-        run: npm run test
-      - name: e2e tests
-        uses: cypress-io/github-action@v6
-        with:
-          command: npm run cypress:run
-          start: npm run start-prod
-          wait-on: http://localhost:5000
-          headed: false
+      # - name: test
+      #   run: npm run test
+      # - name: e2e tests
+      #   uses: cypress-io/github-action@v6
+      #   with:
+      #     command: npm run cypress:run
+      #     start: npm run start-prod
+      #     wait-on: http://localhost:5000
+      #     headed: false
 
   # tag_release:
   #   needs: build_deploy

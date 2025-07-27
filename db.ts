@@ -106,7 +106,7 @@ export const dbOperations = {
     
     // Prepare the update query dynamically
     const fields: string[] = [];
-    const values: any[] = [];
+    const values: (string | number | boolean)[] = [];
     
     if (updates.name !== undefined) {
       fields.push('name = ?');
