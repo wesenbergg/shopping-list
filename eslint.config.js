@@ -3,6 +3,7 @@ const globals = require("globals");
 const reactHooks = require("eslint-plugin-react-hooks");
 const reactRefresh = require("eslint-plugin-react-refresh");
 const tseslint = require("@typescript-eslint/eslint-plugin");
+const cypress = require("eslint-plugin-cypress");
 
 const config = [
   {
@@ -30,14 +31,34 @@ const config = [
       ...js.configs.recommended.rules,
       ...tseslint.configs.recommended.rules,
     },
-    overrides: [
-      {
-        files: ["**/*.spec.ts"],
-        rules: {
-          "no-undef": "off",
-        },
+  },
+  {
+    files: ["**/*.spec.ts"],
+    rules: {
+      "no-undef": "off",
+    },
+  },
+  {
+    // Cypress test files
+    files: ["cypress/**/*.cy.ts"],
+    plugins: {
+      cypress: cypress,
+    },
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        cy: "readonly",
+        Cypress: "readonly",
+        describe: "readonly",
+        it: "readonly",
+        expect: "readonly",
+        beforeEach: "readonly",
+        afterEach: "readonly",
       },
-    ],
+    },
+    rules: {
+      ...cypress.configs.recommended.rules,
+    },
   },
   {
     // Frontend TypeScript and React files
@@ -59,6 +80,7 @@ const config = [
       globals: {
         ...globals.browser,
         ...globals.jest,
+        global: "readonly",
       },
     },
     rules: {

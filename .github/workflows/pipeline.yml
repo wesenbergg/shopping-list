@@ -20,18 +20,32 @@ jobs:
       id-token: "write"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 build-essential
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: "20"
-      - name: pnpm install
-        run: pnpm install
+          version: 10
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install && cd ui && pnpm install && cd ..
+      - name: Rebuild better-sqlite3
+        run: cd node_modules/better-sqlite3 && pnpm rebuild
       - name: lint
         run: pnpm run lint
       - name: build
         run: pnpm run build
 
       - name: test
-        run: pnpm run test
+        run: cd ui && pnpm run test && cd ..
+      - name: Install Cypress binary
+        run: pnpm exec cypress install
       - name: e2e tests
         uses: cypress-io/github-action@v6
         with:
@@ -40,20 +54,20 @@ jobs:
           wait-on: http://localhost:5173
           headed: false
 
-  # tag_release:
-  #   needs: build_deploy
-  #   name: Tag Release
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: "write"
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: "0"
-  #     - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-  #       name: Bump version and push tag
-  #       uses: anothrNick/github-tag-action@1.73.0
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         DEFAULT_BUMP: minor
+  tag_release:
+    needs: build_deploy
+    name: Tag Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "write"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
+      - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.73.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: minor
