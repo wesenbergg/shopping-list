@@ -16,7 +16,8 @@
     "lint": "eslint . \"ui/**/*.{ts,tsx}\" --config eslint.config.js",
     "clean:all": "rm -rf node_modules && rm -rf ui/node_modules && rm -rf dist && rm -rf ui/dist && pnpm install && cd ui && pnpm install",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "postinstall": "npm rebuild better-sqlite3"
   },
   "keywords": [],
   "author": "wesenbergg",

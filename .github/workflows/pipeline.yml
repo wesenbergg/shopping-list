@@ -50,6 +50,19 @@ jobs:
           wait-on: http://localhost:5173
           headed: false
 
+  render_deploy:
+    needs: build_deploy
+    name: Render Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "write"
+      id-token: "write"
+    steps:
+      - name: Trigger Render Deployment
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && !contains(github.event.pull_request.labels.*.name, 'skip deployment') }}
+        run: |
+          curl -f -X POST https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_SERVICE_KEY }}
+
   tag_release:
     needs: build_deploy
     name: Tag Release
