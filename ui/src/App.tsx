@@ -260,7 +260,10 @@ const App = () => {
                     </div>
                     <div className="item-actions">
                       <button onClick={() => startEdit(item)}>Edit</button>
-                      <button onClick={() => handleDeleteItem(item.id)}>
+                      <button
+                        data-testid={`delete-button-${item.name}`}
+                        onClick={() => handleDeleteItem(item.id)}
+                      >
                         Delete
                       </button>
                     </div>
