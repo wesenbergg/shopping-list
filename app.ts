@@ -10,7 +10,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
-app.use(express.static('ui/dist'));
+// Serve static files from the React app build directory
+app.use('/', express.static('dist/ui'));
 
 app.get('/api/health', (_req: Req, res: Res) => {
   res.json({ status: 'ok' });
@@ -70,6 +71,19 @@ app.delete('/api/items/:id', (req: Req, res: Res) => {
   }
   
   res.json({ message: 'Item deleted successfully', item: deletedItem });
+});
+
+// Serve React app for all other routes
+app.use((req: Req, res: Res) => {
+  if (req.method === 'GET') {
+    return res.sendFile('index.html', { root: 'dist/ui' });
+  }
+  
+  if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
+    return res.status(405).json({ message: 'Method Not Allowed' });
+  }
+  
+  return res.status(404).json({ message: 'Not Found' });
 });
 
 // Start the server
