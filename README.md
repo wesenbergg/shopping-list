@@ -37,6 +37,14 @@ To start the development server:
 pnpm dev
 ```
 
+## Production
+
+To start the production server:
+
+1. pnpm run clean:all
+2. pnpm run build:all
+3. pnpm run start
+
 ## Testing
 
 This project includes both unit tests (Jest) and end-to-end tests (Cypress).
