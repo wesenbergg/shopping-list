@@ -10,12 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
-// Serve only files from the specific UI build directory
-app.use('/', express.static('ui/dist', {
-  dotfiles: 'ignore',
-  index: false,
-  maxAge: '1d'
-}));
+app.use(express.static('ui/dist'));
 
 app.get('/api/health', (_req: Req, res: Res) => {
   res.json({ status: 'ok' });
