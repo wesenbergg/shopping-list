@@ -30,6 +30,14 @@ const config = [
       ...js.configs.recommended.rules,
       ...tseslint.configs.recommended.rules,
     },
+    overrides: [
+      {
+        files: ["**/*.spec.ts"],
+        rules: {
+          "no-undef": "off",
+        },
+      },
+    ],
   },
   {
     // Frontend TypeScript and React files

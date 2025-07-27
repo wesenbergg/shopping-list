@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import App from "../App";
+import type { ReactElement } from "react";
 
 // Define the item type
 interface ShoppingItem {
@@ -17,12 +18,12 @@ interface ShoppingItem {
 }
 
 // Helper function to render component with act
-const renderWithAct = async (component: React.ReactElement) => {
-  let renderResult: any;
+const renderWithAct = async (component: ReactElement) => {
+  let renderResult: ReturnType<typeof render> | undefined;
   await act(async () => {
     renderResult = render(component);
   });
-  return renderResult;
+  return renderResult!;
 };
 
 describe("App Component - Error Handling Tests", () => {

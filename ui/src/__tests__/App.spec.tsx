@@ -7,6 +7,8 @@ import {
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import App from "../App";
+import type { ReactElement } from "react";
+import type { RequestInfo, RequestInit } from "node-fetch";
 
 // Define the item type
 interface ShoppingItem {
@@ -28,8 +30,8 @@ const mockFetch = (status = 200, responseData: ShoppingItem[] = []) => {
 };
 
 // Helper function to render component with act
-const renderWithAct = async (component: React.ReactElement) => {
-  let renderResult: any;
+const renderWithAct = async (component: ReactElement) => {
+  let renderResult: ReturnType<typeof render> | undefined;
   await act(async () => {
     renderResult = render(component);
   });

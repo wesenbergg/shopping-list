@@ -1,4 +1,4 @@
-import express, { type Request, type Response } from 'express';
+import express, { type Request as Req, type Response as Res } from 'express';
 import cors from 'cors';
 import { dbOperations } from './db';
 
@@ -11,13 +11,13 @@ app.use(express.json());
 app.use(cors());
 
 // GET: Get all shopping list items
-app.get('/api/items', (req: Request, res: Response) => {
+app.get('/api/items', (req: Req, res: Res) => {
   const items = dbOperations.getAllItems();
   res.json(items);
 });
 
 // GET: Get a specific shopping list item by ID
-app.get('/api/items/:id', (req: Request, res: Response) => {
+app.get('/api/items/:id', (req: Req, res: Res) => {
   const id = parseInt(req.params.id);
   const item = dbOperations.getItemById(id);
   
@@ -29,7 +29,7 @@ app.get('/api/items/:id', (req: Request, res: Response) => {
 });
 
 // POST: Add a new item to the shopping list
-app.post('/api/items', (req: Request, res: Response) => {
+app.post('/api/items', (req: Req, res: Res) => {
   const { name, quantity, purchased = false } = req.body;
   
   if (!name || quantity === undefined) {
@@ -41,7 +41,7 @@ app.post('/api/items', (req: Request, res: Response) => {
 });
 
 // PUT: Update an existing shopping list item
-app.put('/api/items/:id', (req: Request, res: Response) => {
+app.put('/api/items/:id', (req: Req, res: Res) => {
   const id = parseInt(req.params.id);
   const { name, quantity, purchased } = req.body;
   
@@ -55,7 +55,7 @@ app.put('/api/items/:id', (req: Request, res: Response) => {
 });
 
 // DELETE: Remove a shopping list item
-app.delete('/api/items/:id', (req: Request, res: Response) => {
+app.delete('/api/items/:id', (req: Req, res: Res) => {
   const id = parseInt(req.params.id);
   const deletedItem = dbOperations.deleteItem(id);
   

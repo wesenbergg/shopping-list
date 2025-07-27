@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { FormEvent } from "react";
 
 const API_URL = "http://localhost:3000/api";
 
@@ -75,7 +76,7 @@ const App = () => {
   }, []);
 
   // Add a new item
-  const handleAddItem = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddItem = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!newItem.name.trim()) {
