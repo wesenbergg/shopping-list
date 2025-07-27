@@ -8,10 +8,6 @@ on:
     branches: [master]
     types: [opened, synchronize]
 
-env:
-  IS_PRODUCTION: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-  SKIP_DEPLOY: ${{ contains(github.event.head_commit.message, '#skip') }}
-
 jobs:
   build_deploy:
     runs-on: ubuntu-latest
@@ -71,3 +67,101 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: minor
+
+  discord_notification:
+    needs: [build_deploy, tag_release]
+    name: Discord Notification
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Send Success Deployment Notification
+        if: ${{ success() && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{
+            "embeds": [{
+              "title": "Deployment Successful",
+              "description": "The deployment pipeline has completed successfully.",
+              "color": 65280,
+              "fields": [
+                {
+                  "name": "Repository",
+                  "value": "${{ github.repository }}",
+                  "inline": true
+                }
+              ],
+              "footer": {
+                "text": "Deployed by ${{ github.actor }}"
+              }
+            }]
+          }' \
+          ${{ secrets.DISCORD_WEBHOOK }}
+
+      - name: Send Success PR Notification
+        if: ${{ success() && github.event_name == 'pull_request' }}
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{
+            "embeds": [{
+              "title": "All Checks Passed",
+              "description": "The pull request #${{ github.event.pull_request.number }} has passed all checks.",
+              "color": 65280,
+              "fields": [
+                {
+                  "name": "Repository",
+                  "value": "${{ github.repository }}",
+                  "inline": true
+                }
+              ],
+              "footer": {
+                "text": "Deployed by ${{ github.actor }}"
+              }
+            }]
+          }' \
+          ${{ secrets.DISCORD_WEBHOOK }}
+
+      - name: Send Suspended Notification
+        if: cancelled()
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{
+            "embeds": [{
+              "title": "Pipeline Suspended",
+              "description": "The deployment pipeline has been suspended.",
+                "color": 3447003,
+              "fields": [
+                {
+                  "name": "Repository",
+                  "value": "${{ github.repository }}",
+                  "inline": true
+                }
+              ],
+              "footer": {
+                "text": "Deployed by ${{ github.actor }}"
+              }
+            }]
+          }' \
+          ${{ secrets.DISCORD_WEBHOOK }}
+
+      - name: Send Failure Notification
+        if: failure()
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{
+            "embeds": [{
+              "title": "Pipeline Failed on Deployment",
+              "description": "The deployment pipeline has failed.",
+              "color": 15158332,
+              "fields": [
+                {
+                  "name": "Repository",
+                  "value": "${{ github.repository }}",
+                  "inline": true
+                }
+              ],
+              "footer": {
+                "text": "Deployed by ${{ github.actor }}"
+              }
+            }]
+          }' \
+          ${{ secrets.DISCORD_WEBHOOK }}
