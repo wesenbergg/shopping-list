@@ -40,7 +40,7 @@ h1 {
   font-size: 2rem;
   margin-bottom: 1.5rem;
   color: var(--primary-color);
-  text-align: center;
+  text-align: left;
 }
 
 h2 {
