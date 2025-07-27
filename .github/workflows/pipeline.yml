@@ -3,17 +3,17 @@ name: Deployment Pipeline
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
-    branches: [main]
+    branches: [master]
     types: [opened, synchronize]
 
 env:
-  IS_PRODUCTION: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  IS_PRODUCTION: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
   SKIP_DEPLOY: ${{ contains(github.event.head_commit.message, '#skip') }}
 
 jobs:
-  simple_deployment_pipeline:
+  build_deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: "read"
@@ -26,35 +26,22 @@ jobs:
       - name: npm install
         run: npm install
       - name: lint
-        run: npm run eslint
+        run: npm run lint
       - name: build
         run: npm run build
 
-      # - name: test
-      #   run: npm run test
-      # - name: e2e tests
-      #   uses: cypress-io/github-action@v6
-      #   with:
-      #     command: npm run cypress:run
-      #     start: npm run start-prod
-      #     wait-on: http://localhost:5000
-      #     headed: false
-
-  # fly_deploy:
-  #   needs: simple_deployment_pipeline
-  #   name: Deploy app to Fly.io
-  #   runs-on: ubuntu-latest
-  #   concurrency: deploy-group
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: superfly/flyctl-actions/setup-flyctl@master
-  #     - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-  #       run: flyctl deploy --remote-only
-  #       env:
-  #         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: test
+        run: npm run test
+      - name: e2e tests
+        uses: cypress-io/github-action@v6
+        with:
+          command: npm run cypress:run
+          start: npm run start-prod
+          wait-on: http://localhost:5000
+          headed: false
 
   # tag_release:
-  #   needs: fly_deploy
+  #   needs: build_deploy
   #   name: Tag Release
   #   runs-on: ubuntu-latest
   #   permissions:
