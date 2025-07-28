@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL =
+  import.meta.env.MODE === "prod"
+    ? "https://api.example.com"
+    : "http://localhost:3000/api";
 
 const App = () => {
   const [items, setItems] = useState<
@@ -80,6 +83,7 @@ const App = () => {
     e.preventDefault();
 
     if (!newItem.name.trim()) {
+      setError("Item name cannot be empty");
       return;
     }
 
