@@ -104,11 +104,11 @@ describe("App Component - Error Handling Tests", () => {
       quantity: 1,
       purchased: false,
     };
-    vi.fn().mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       status: 200,
       json: () => Promise.resolve([mockItem]),
-    });
+    }) as unknown as typeof fetch;
 
     await renderWithAct(<App />);
 
@@ -118,7 +118,11 @@ describe("App Component - Error Handling Tests", () => {
     });
 
     // Mock DELETE request to fail
-    vi.fn().mockRejectedValueOnce(new Error("Network error"));
+    global.fetch = vi
+      .fn()
+      .mockRejectedValueOnce(
+        new Error("Network error")
+      ) as unknown as typeof fetch;
 
     // Click delete button
     const deleteButton = screen.getByText("Delete");
@@ -184,11 +188,11 @@ describe("App Component - Error Handling Tests", () => {
       quantity: 1,
       purchased: false,
     };
-    vi.fn().mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       status: 200,
       json: () => Promise.resolve([mockItem]),
-    });
+    }) as unknown as typeof fetch;
 
     await renderWithAct(<App />);
 
@@ -213,7 +217,11 @@ describe("App Component - Error Handling Tests", () => {
     });
 
     // Mock PUT request to fail
-    vi.fn().mockRejectedValueOnce(new Error("Network error"));
+    global.fetch = vi
+      .fn()
+      .mockRejectedValueOnce(
+        new Error("Network error")
+      ) as unknown as typeof fetch;
 
     // Click save button
     const saveButton = screen.getByText("Save");
