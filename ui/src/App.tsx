@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 
 const API_URL =
-  import.meta.env.MODE === "prod"
-    ? "https://api.example.com"
+  import.meta.env.MODE === "production"
+    ? "https://shopping-list-dgqq.onrender.com/api"
     : "http://localhost:3000/api";
 
 const App = () => {
