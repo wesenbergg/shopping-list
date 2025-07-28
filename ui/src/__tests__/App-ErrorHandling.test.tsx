@@ -1,4 +1,13 @@
 import {
+  vi,
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach,
+  afterAll,
+} from "vitest";
+import {
   render,
   screen,
   fireEvent,
@@ -32,15 +41,16 @@ describe("App Component - Error Handling Tests", () => {
 
   beforeEach(() => {
     // Clear all mocks before each test
-    jest.clearAllMocks();
+    vi.resetAllMocks();
     // Set up a default fetch mock
-    global.fetch = jest.fn() as jest.Mock;
-    jest.spyOn(console, "error").mockImplementation(() => {});
+    global.fetch = vi.fn() as unknown as typeof fetch;
+    // Mock console.error
+    vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(() => {
     // Restore console.error
-    (console.error as jest.Mock).mockRestore();
+    vi.restoreAllMocks();
   });
 
   afterAll(() => {
@@ -50,7 +60,7 @@ describe("App Component - Error Handling Tests", () => {
 
   test("handles error when adding a new item", async () => {
     // Mock initial fetch to load the app
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       status: 200,
       json: () => Promise.resolve([]),
@@ -64,9 +74,9 @@ describe("App Component - Error Handling Tests", () => {
     });
 
     // Now mock fetch to fail for the POST request
-    (global.fetch as jest.Mock).mockRejectedValueOnce(
-      new Error("Failed to add item")
-    );
+    global.fetch = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("Failed to add item"));
 
     // Fill out the form
     const nameInput = screen.getByPlaceholderText("Item name");
@@ -133,11 +143,17 @@ describe("App Component - Error Handling Tests", () => {
       quantity: 1,
       purchased: false,
     };
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve([mockItem]),
-    });
+
+    global.fetch = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve([mockItem]),
+      })
+      .mockRejectedValueOnce(
+        new Error("Network error")
+      ) as unknown as typeof fetch;
 
     await renderWithAct(<App />);
 
@@ -233,9 +249,8 @@ describe("App Component - Error Handling Tests", () => {
       expect(screen.queryByText(/Loading items/i)).not.toBeInTheDocument();
     });
 
-    // Mock a spy on fetch to verify it's not called
-    const fetchSpy = jest.fn();
-    (global.fetch as jest.Mock).mockImplementation(fetchSpy);
+    // Clear previous fetch calls
+    vi.resetAllMocks();
 
     // Submit the form with empty name
     const addItemForm = screen.getByTestId("add-item-form");
@@ -247,6 +262,6 @@ describe("App Component - Error Handling Tests", () => {
     });
 
     // Verify fetch was not called because of empty name validation
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 });
