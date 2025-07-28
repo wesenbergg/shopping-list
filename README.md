@@ -47,7 +47,7 @@ To start the production server:
 
 ## Testing
 
-This project includes both unit tests (Jest) and end-to-end tests (Cypress).
+This project includes both unit tests (Vitest) and end-to-end tests (Cypress).
 
 ### Unit Tests
 ```bash
